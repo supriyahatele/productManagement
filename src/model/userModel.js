@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
         trim: true
       },
       profileImage: { 
-        type:string,
+        type:String,
         required: true, 
         trim: true
      },
