@@ -32,10 +32,23 @@ const isValidObjectId = function (ObjectId) {
 const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
-
-        
+let NameRegex = /^(?![\. ])[a-zA-Z\. ]+(?<! )$/
+let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+let phoneRegex = /^[6-9]\d{9}$/      
 
         let { fname, lname, email, address, password, phone } = data
+        if (!keyValid(fname) || !NameRegex.test(fname)) return res.status(400).send({ status: false, message: "Please enter fname" })
+        if (!keyValid(lname) || !NameRegex.test(lname)) return res.status(400).send({ status: false, message: "Please enter lname" })
+
+        if (!keyValid(email)) return res.status(400).send({ status: false, message: "Please enter EmailId" })
+        if (!emailRegex.test(email)) return res.status(400).send({ status: false, message: "Invalid email" })
+        const findEmail = await userModel.findOne({ email: email })
+        if (findEmail) return res.status(400).send({ status: false, msg: "Email Already exist!!!" })
+
+        if (!phone) return res.status(400).send({ status: false, message: "Phone number is required" })
+        if (!phoneRegex.test(phone)) return res.status(400).send({ status: false, message: "Invalid Number" })
+        const existingMobile = await userModel.findOne({ phone: phone })
+        if (existingMobile) return res.status(400).send({ status: false, message: "Mobile number is already exists" })
 
 
 
