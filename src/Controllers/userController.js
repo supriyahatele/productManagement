@@ -25,7 +25,7 @@ const isValidRequestBody = function (requestBody) {
 let NameRegex = /^(?![\. ])[a-zA-Z\. ]+(?<! )$/
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 let passwordRegex = /^[A-Za-z 0-9\d@$!%*?&]{8,15}$/
-let addressStreetRegex = /[^a-zA-Z0-9 ]/
+let addressStreetRegex = /^[a-zA-Z0-9 ]/
 let addressCityRegex = /^[a-zA-Z ]+$/
 let pincodeRegex = /^[1-9]\d{5}$/
 let phoneRegex = /^[6-9]\d{9}$/
@@ -157,10 +157,15 @@ const loginUser = async function (req, res) {
         }
 
         //User Present or Not
-        let user = await userModel.findOne({ email: userName, password: password })
+        let user = await userModel.findOne({ email: userName})
         if (!user) {
-            return res.status(400).send({ status: false, msg: "Invalid Email or Password" })
+            return res.status(404).send({ status: false, msg: "Email id not found" })
         }
+
+        const matchPassword = await bcrypt.compare(password,user.password);
+
+        if(!matchPassword) return res.status(401).send({status:false, message:"Invalid password" });
+
 
         let token = jwt.sign(
             {
@@ -172,9 +177,9 @@ const loginUser = async function (req, res) {
         );
 
         // res.setHeader("x-api-key", token);
-        res.status(200).send({ status: true, token: token })
+        //res.status(200).send({ status: true, token: token })
 
-        return res.status(200).send({ status: true, token: token, msg: "author logged in successfully" });
+        return res.status(200).send({ status: true, message: "User login successfull", data: {userid: user._id,token: token }});
 
 
     }
@@ -223,6 +228,16 @@ const updateProfile = async function (req, res) {
         if (!isValidObjectId(userId)) return res.status(400).send({ status: false, msg: "not a correct id" })
         const checkUser = await userModel.findById(userId)
         if (!checkUser) return res.status(404).send({ status: false, msg: "user not found" })
+
+
+        //<=========Authorization===========>
+
+        //check if the logged-in user is requesting to modify their own resources 
+        if (userId != req.decodedtoken.userId)
+            return res.status(403).send({ status: false, msg: 'Author loggedin is not allowed to modify the requested book data' })
+        
+        //    console.log("Successfully Authorized")
+
 
         //<=====Validating fields to update======>
         let { fname, lname, email, address, password, phone } = data
