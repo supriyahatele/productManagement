@@ -17,9 +17,9 @@ const authentication = function (req, res, next) {
         try {
             var decodedtoken = jwt.verify(token, "functionup-radon-secretKey", { ignoreExpiration: true });
             
-            // if (Date.now() > decodedtoken.exp * 1000) {
-            //     return res.status(401).send({ status: false, message: "token is expired" });
-            // }
+            if (Date.now() > decodedtoken.exp * 1000) {
+                return res.status(401).send({ status: false, message: "token is expired" });
+            }
             
         }
         catch (err) {
