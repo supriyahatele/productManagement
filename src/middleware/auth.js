@@ -15,9 +15,12 @@ const authentication = function (req, res, next) {
             return res.status(401).send({ status: false, msg: "Token missing" })
         }
         try {
-            var decodedtoken = jwt.verify(token, "functionup-radon-secretKey", { ignoreExpiration: true });
+            var decodedtoken = jwt.verify(token, "functionup-radon-secretKey", { ignoreExpiration: true }); 
             
-            if (Date.now() > decodedtoken.exp * 1000) {
+
+            console.log(Date.now())
+            
+            if (Date.now() > decodedtoken.exp * 1000) { //Date.now() format in milliseconds, decodedtoken.exp is in seconds
                 return res.status(401).send({ status: false, message: "token is expired" });
             }
             
