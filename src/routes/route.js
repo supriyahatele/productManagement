@@ -12,7 +12,7 @@ const {authentication}=require('../middleware/auth')
 router.post('/register', createUser)
 router.post("/login", loginUser)
 router.get("/user/:userId/profile", authentication, getUser)
-router.put("/user/:userId/profile", updateProfile)
+router.put("/user/:userId/profile", authentication, updateProfile)
 
 //<======FEATURE 2 APIs=======>
 router.post('/products', createProduct)
@@ -22,3 +22,4 @@ router.put('/products/:productId', updateProduct)
 router.delete('/products/:productId', deleteProduct)
 
 module.exports = router
+
