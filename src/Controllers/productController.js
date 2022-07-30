@@ -19,7 +19,7 @@ const isValidRequestBody = function (requestBody) {
 
 
 let priceRegex = /^[(0-9)+.?(0-9)*]+$/
-let styleRegex = /^[a-zA-Z]+$/
+let styleRegex = /^[a-zA-Z _-]+$/
 let currency = ['INR', 'USD']
 let titleRegex = /^[a-zA-Z][a-zA-Z0-9 $!-_#@%&\.]+$/
 //let sizes = ["S", "XS", "M", "X", "L", "XXL", "XL"]
@@ -39,7 +39,7 @@ const createProduct = async function (req, res) {
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, productImage } = data
 
         //validate title
-        if (!title) return res.status(400).send({ status: false, message: "Please enter title" })
+        if (!title.trim()) return res.status(400).send({ status: false, message: "Please enter title" })
         title = title.trim().split(" ").filter(word => word).join(" ");
         if(!titleRegex.test(title)) return res.status(400).send({ status: false, message: "Enter a proper title" })
         
@@ -135,7 +135,7 @@ const createProduct = async function (req, res) {
 
 let getProducts = async (req, res) => {
     try {
-        console.log("get products API")
+        //console.log("get products API")
 
         let filterProduct = req.query
         //console.log(filterProduct)
@@ -146,7 +146,7 @@ let getProducts = async (req, res) => {
         
         //<========Validations of filters========>
         const { size, name, priceGreaterThan, priceLessThan } = filterProduct
-        console.log("destructured:", size, name, priceGreaterThan, priceLessThan)
+        //console.log("destructured:", size, name, priceGreaterThan, priceLessThan)
         
 
         if (priceGreaterThan) {
@@ -238,7 +238,7 @@ const updateProduct = async function (req, res) {
         let productId = req.params.productId
         let data = req.body
         let updateObject = {}
-        let sizeList = [], uniqueSizes = []
+        let sizeList = [] 
 
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "Request Body cant be empty!! Enter at least one field to update!!" })
@@ -303,21 +303,25 @@ const updateProduct = async function (req, res) {
         }
 
         
-
+        let uniqueSizes = []
         if (availableSizes) {
-            availableSizes = availableSizes.trim()
+            //availableSizes = availableSizes.trim()
             sizeList = availableSizes.toUpperCase().split(",").map(x => x.trim());
 
             if (Array.isArray(sizeList)) {
                 for (let i = 0; i < sizeList.length; i++) {
                     if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizeList[i]))
                         return res.status(400).send({ status: false, message: "Invalid size values, should include only sizes from  (S,XS,M,X,L,XXL,XL)" })
-                        //avoids duplicate values of sizes
-                        if(!(checkProduct.availableSizes.includes(sizeList[i])))
-                            uniqueSizes.push();
+                    
+                    //avoids duplicate values of sizes
+                    if(!(checkProduct.availableSizes.includes(sizeList[i])) && !uniqueSizes.includes(sizeList[i]))
+                            uniqueSizes.push(sizeList[i])
+                    
                 }
             }
         }
+
+        
 
 
         
@@ -374,6 +378,7 @@ const deleteProduct = async function (req, res) {
 
 
 module.exports = { createProduct, getProducts, getProductById, updateProduct, deleteProduct }
+
 
 
 
