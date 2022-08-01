@@ -216,10 +216,11 @@ const getProductById = async function (req, res) {
     try {
         let productId = req.params.productId
         productId = productId.trim()
-        if (!productId) return res.status(400).send({ status: false, msg: "plz provide productId" })
+        //if (!productId) return res.status(400).send({ status: false, msg: "plz provide productId" })
+
         if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: " enter a valid productId " });
 
-        let findProduct = await productModel.findById({ _id: productId })
+        let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!findProduct) return res.status(404).send({ status: false, message: " product not found" })
 
         return res.status(200).send({ status: true, message: " product", data: findProduct })
@@ -247,9 +248,8 @@ const updateProduct = async function (req, res) {
 
         productId = productId.trim()
         if (!isValidObjectId(productId)) return res.status(400).send({ status: false, msg: "Productid is not valid" })
-        const checkProduct = await productModel.findById(productId)
+        const checkProduct = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!checkProduct) return res.status(404).send({ status: false, msg: "Product is not found" })
-
 
         //Validation for updates
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, productImage } = data
@@ -267,7 +267,9 @@ const updateProduct = async function (req, res) {
 
         
         if (description) {
-            description = description.trim()
+            description = description.trim().split(" ").filter(x => x).join(" ");
+            console.log(description)
+
             updateObject.description = description
         }
 
@@ -359,7 +361,8 @@ const deleteProduct = async function (req, res) {
     try {
         let productId = req.params.productId
         productId = productId.trim()
-        if (!productId) return res.status(400).send({ status: false, msg: "plz provide productId" })
+       // if (!productId) return res.status(400).send({ status: false, msg: "plz provide productId" })
+        
         if (!isValidObjectId(productId)) return res.status(400).send({ status: false, message: " enter a valid productId " });
 
         let findProduct = await productModel.findById({ _id: productId })
