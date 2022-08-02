@@ -296,6 +296,7 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 - __Response format__
   - _**On success**_ - Return HTTP status 200. Also return the updated cart document. The response should be a JSON object like [this](#successful-response-structure)
   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
+  
 
 ### GET /users/:userId/cart
 - Returns cart summary of the user.
