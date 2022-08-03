@@ -101,7 +101,7 @@ const createProduct = async function (req, res) {
         if (currencyFormat) {
             currencyFormat = currencyFormat.trim()
             if (currencyFormat != '₹' && currencyFormat != '$') return res.status(400).send({ status: false, message: "Please enter a valid currencyFormat: It should be ₹" })
-            if((currencyFormat == '₹' && currencyId != 'INR') || (currencyFormat == '$' && currencyId != 'USR')) return res.status(400).send({ status: false, message: "Invalid currencyFormat and currencyId combination: It should be ₹ for INR, and $ for USD" })
+            if((currencyFormat == '₹' && currencyId != 'INR') || (currencyFormat == '$' && currencyId != 'USD')) return res.status(400).send({ status: false, message: "Invalid currencyFormat and currencyId combination: It should be ₹ for INR, and $ for USD" })
             data1.currencyFormat = currencyFormat;
         }
 
