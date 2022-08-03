@@ -5,7 +5,7 @@ const router = express.Router();
 const { createUser, loginUser, getUser, updateProfile } = require('../Controllers/userController')
 const { createProduct, getProducts, getProductById, updateProduct, deleteProduct } = require('../Controllers/productController')
 const {addToCart,updateCart, getCartById, deleteCart} = require('../Controllers/cartController')
-
+const {createOrder, updateOrder} = require('../Controllers/orderController')
 const {authentication}=require('../middleware/auth')
 
 
@@ -22,12 +22,16 @@ router.get('/products/:productId', getProductById)
 router.put('/products/:productId', updateProduct)
 router.delete('/products/:productId', deleteProduct)
 
+//<======FEATURE 3 APIs=======>
+router.post('/users/:userId/cart',authentication,addToCart)
+router.put('/users/:userId/cart',authentication,updateCart)
+router.get('/users/:userId/cart',authentication,getCartById)
+router.delete('/users/:userId/cart',authentication,deleteCart)
 
-//
-router.post('/users/:userId/cart',addToCart)
-router.put('/users/:userId/cart',updateCart)
-router.get('/users/:userId/cart',getCartById)
-router.delete('/users/:userId/cart',deleteCart)
+//<======FEATURE 3 APIs=======>
+router.post('/users/:userId/orders',authentication,createOrder)
+router.put('/users/:userId/orders',authentication,updateOrder)
+
 
 module.exports = router
 

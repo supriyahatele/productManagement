@@ -24,8 +24,8 @@ const isValidRequestBody = function (requestBody) {
 let NameRegex = /^(?![\. ])[a-zA-Z\. ]+(?<! )$/
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 let passwordRegex = /^[A-Za-z 0-9\d@$!%*?&]{8,15}$/
-let addressStreetRegex = /^[a-zA-Z0-9 -\.]$/
-let addressCityRegex = /^[a-zA-Z]+$/
+let addressStreetRegex = /^[a-zA-Z0-9 -\.]+$/
+let addressCityRegex = /^[a-zA-Z ]+$/
 let pincodeRegex = /^[1-9]\d{5}$/
 let phoneRegex = /^[6-9]\d{9}$/
 
@@ -39,7 +39,6 @@ const createUser = async function (req, res) {
         if (!files || files.length == 0) return res.status(400).send({ status: false, message: "Please enter image file!!" })
 
         let { fname, lname, email, address, password, phone } = data
-
 
         //validate fname
         if (!keyValid(fname)) return res.status(400).send({ status: false, message: "Please enter fname" })
@@ -160,23 +159,23 @@ const loginUser = async function (req, res) {
             return res.status(400).send({ status: false, message: "requestBody cant be empty" });
         }
 
-        const {email, password} = requestBody
+        let {email, password} = requestBody
 
         //Email validation
-        if (!keyValid(email)) {
+        if (!(email)) {
             return res.status(400).send({ status: false, msg: "email is required" })
         }
-        email.trim()
-        if (!(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).test(email)) {
-            return res.status(400).send({ status: false, message: "Please provide valid Email Id" });
-        }
+        // email.trim()
+        // if (!(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/).test(email)) {
+        //     return res.status(400).send({ status: false, message: "Please provide valid Email Id" });
+        // }
 
         //Password validation
-        if (!keyValid(password) || typeof password != "string") {
-            return res.status(400).send({ status: false, msg: "Provide a valid password!!" })
-        }
-        password = password.trim()
-        if (!passwordRegex.test(password)) return res.status(400).send({ status: false, message: "Invalid password!! Enter a password of 8-15 characters" })
+        // if (!keyValid(password) || typeof password != "string") {
+        //     return res.status(400).send({ status: false, msg: "Provide a valid password!!" })
+        // }
+        // password = password.trim()
+        if (!(password)) return res.status(400).send({ status: false, message: "Iplease provide password" })
 
         //User Present or Not
         let user = await userModel.findOne({ email: email })
@@ -197,7 +196,7 @@ const loginUser = async function (req, res) {
                 organization: "FunctionUp",
             },
             "functionup-radon-secretKey",
-            {expiresIn:'1m'}
+            {expiresIn:'24h'}
             
         );
 

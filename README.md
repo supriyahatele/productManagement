@@ -342,7 +342,6 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 }
 ```
 
-
 ## Checkout/Order APIs (Authentication and authorization required)
 ### POST /users/:userId/orders
 - Create an order for the user
