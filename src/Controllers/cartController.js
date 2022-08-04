@@ -169,13 +169,13 @@ const updateCart = async function (req, res) {
             let i = 0, f = 0;
             for (i; i < item.length; i++) {
                 if (item[i].productId.toString() == productId) {
-                    f = 1;
+                    f = 1;  //set flag when given  productid is found in cart
                     if (removeProduct == "1") {
                         item[i].quantity--;
                         findCart.totalPrice -= priceSub;
-                        // findCart.totalItems -= 1;
+                       
                     } else {
-                        let price = item[i].quantity * priceSub //findProduct.price
+                        let price = item[i].quantity * priceSub 
                         findCart.totalPrice -= price
                         item[i].quantity = 0
                     }
@@ -185,12 +185,11 @@ const updateCart = async function (req, res) {
 
                 }
             }
-            if (f == 0) { return res.status(404).send({ status: false, message: "productId not found in cart" }) }
+            if (f == 0) { return res.status(404).send({ status: false, message: "productId not found in cart" }) }    // //set flag when given  productid is not found in cart
 
 
             findCart.totalItems = item.length
             findCart.save()
-            // if(p == 1) return res.status(404).send({ status: false, message: "product already deleted" }) 
             return res.status(200).send({ status: true, message: "Success", data: findCart })
 
         }
