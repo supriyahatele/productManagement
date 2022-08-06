@@ -11,7 +11,6 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 }
 
-let validStatus = ['pending', 'completed', 'cancelled']
 
 // <================================================= POST /order ===============================================================>
 
@@ -36,6 +35,9 @@ const createOrder = async function (req, res) {
         let { cartId, cancellable, status } = data
 
         if (!cartId) return res.status(400).send({ status: false, message: "please provide cartId" })
+        if (typeof productId != "string") return res.status(400).send({ status: false, message: " Enter productId in valid format!!! " });
+        cartId = cartId.trim();
+        if (!isValidObjectId(cartId)) return res.status(400).send({ status: false, message: " enter a valid cartId " });
         let checkCart = await cartModel.findById({ _id: cartId }).select({ _id: 0, userId: 1, items: 1, totalPrice: 1, totalItems: 1 })
         if (!checkCart) return res.status(404).send({ status: false, message: " cart not found" })
 
@@ -54,14 +56,15 @@ const createOrder = async function (req, res) {
             totalQuantity: totalQuantity,
             
         }
-        // if (status) {
-        //     if (typeof status != "string") return res.status(400).send({ status: false, message: "Status field Invalid format" })
-        //     if (!validStatus.includes(status)) return res.status(400).send({ status: false, message: "Status field should be one of these values: ('pending', 'completed', 'cancelled')" })
-        //     newObj.status = status
-        // }
+        
+        if (status) {
+            if (typeof status != "string") return res.status(400).send({ status: false, message: "Status field Invalid format" })
+            if (status != "pending") return res.status(400).send({ status: false, message: "Status field should be pending while creating an order" })
+            newObj.status = status
+        }
 
         if (cancellable) {
-            if (typeof cancellable != Boolean) return res.status(400).send({ status: false, message: "Cancellable should be of Boolean type" })
+            if (typeof cancellable != "boolean") return res.status(400).send({ status: false, message: "Cancellable should be of Boolean type" })
             newObj.cancellable = cancellable;
         }
         let order = await orderModel.create(newObj)
@@ -101,17 +104,20 @@ const updateOrder = async function (req, res) {
         let { orderId,status } = req.body
 
         if (!orderId) return res.status(400).send({ status: false, msg: "plz provide orderId" })
+        if (typeof productId != "string") return res.status(400).send({ status: false, message: " Enter productId in valid format!!! " });
+        orderId = orderId.trim()
         if (!isValidObjectId(orderId)) return res.status(400).send({ status: false, message: " provide a valid orderId " });
 
         let findOrder = await orderModel.findOne({ _id: orderId, isDeleted: false })
         if (!findOrder) return res.status(404).send({ status: false, message: "order not found for this user!!" })
         
-        if (userId != findOrder.userId) return res.status(403).send({ status: false, message: "Unauthorized access!! trying to access someone else's order" })
+        if (userId != findOrder.userId) return res.status(403).send({ status: false, message: "access denied!! trying to access someone else's order" })
         if(!status) return res.status(400).send({ status: false, message: "please provide status to update" })
 
-        if(status != 'cancelled'&& status != 'completed') return res.status(400).send({ status: false, message: "status values should be cancelled or completed" })
+        if (typeof status != "string") return res.status(400).send({ status: false, message: "Status field Invalid format" })
+        if(status != 'cancelled'&& status != 'completed') return res.status(400).send({ status: false, message: "status value to update should be cancelled or completed" })
 
-        if(findOrder.status == 'cancelled' && findOrder.status == 'completed') return res.status(400).send({ status: false, message: "this order is already closed, can't update further" })        
+        if(findOrder.status == 'cancelled' || findOrder.status == 'completed') return res.status(400).send({ status: false, message: "this order is already closed, can't update further" })        
         
 
        if(status == 'cancelled'){

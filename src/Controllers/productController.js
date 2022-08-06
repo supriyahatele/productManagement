@@ -60,12 +60,11 @@ const createProduct = async function (req, res) {
         if(!currency.includes(currencyId)) return res.status(400).send({ status: false, message: "currencyId invalid" })
 
         if (!files || files.length == 0) return res.status(400).send({ status: false, message: "Please provide product image file!!" })
-        //if(productImage) return res.status(400).send({ status: false, message: "invalid format of product image!!" })
-
+        
         if(!availableSizes) return res.status(400).send({ status: false, message: "available sizes can't be empty" })
 
         let sizeList = availableSizes.toUpperCase().split(",").map(x => x.trim());
-        console.log(sizeList)
+        //console.log(sizeList)
         let uniqueSizes = []
     
         if (Array.isArray(sizeList)) {
@@ -75,7 +74,7 @@ const createProduct = async function (req, res) {
                 if(!uniqueSizes.includes(sizeList[i]))
                     uniqueSizes.push(sizeList[i])
             }
-            console.log("Unique Sizes: ", uniqueSizes);
+            //console.log("Unique Sizes: ", uniqueSizes);
         }
 
 
@@ -100,10 +99,14 @@ const createProduct = async function (req, res) {
 
         if (currencyFormat) {
             currencyFormat = currencyFormat.trim()
-            if (currencyFormat != '₹' && currencyFormat != '$') return res.status(400).send({ status: false, message: "Please enter a valid currencyFormat: It should be ₹" })
-            if((currencyFormat == '₹' && currencyId != 'INR') || (currencyFormat == '$' && currencyId != 'USD')) return res.status(400).send({ status: false, message: "Invalid currencyFormat and currencyId combination: It should be ₹ for INR, and $ for USD" })
+            if (currencyFormat != '₹') return res.status(400).send({ status: false, message: "Please enter a valid currencyFormat" })
+            // && currencyFormat != '$'
+            if((currencyFormat == '₹' && currencyId != 'INR')) return res.status(400).send({ status: false, message: "Invalid currencyFormat and currencyId combination" })
+            //|| (currencyFormat == '$' && currencyId != 'USD')
             data1.currencyFormat = currencyFormat;
         }
+
+
 
         if (isFreeShipping) {
             isFreeShipping = isFreeShipping.trim()
@@ -146,7 +149,7 @@ let getProducts = async (req, res) => {
         let filterObject = { isDeleted: false }
         
         //<========Validations of filters========>
-        const { size, name, priceGreaterThan, priceLessThan } = filterProduct
+        let { size, name, priceGreaterThan, priceLessThan} = filterProduct
         //console.log("destructured:", size, name, priceGreaterThan, priceLessThan)
         
 
@@ -160,6 +163,7 @@ let getProducts = async (req, res) => {
         if (priceLessThan) {
             if (!priceRegex.test(priceLessThan)) return res.status(400).send({ status: false, message: 'Invalid format of priceLessThan!! ' })
             if (priceGreaterThan) {
+                if(priceGreaterThan >= priceLessThan || priceLessThan == 1+priceGreaterThan ) return res.status(400).send({ status: false, message: 'Invalid combination of priceLessThan and priceGreaterThan!! ' })
                 filterObject.price = { $gt: priceGreaterThan, $lt: priceLessThan }
             } else {
                 filterObject.price = {
@@ -174,12 +178,16 @@ let getProducts = async (req, res) => {
         }
 
         if ('priceSort' in filterProduct) {
+            if(filterProduct.priceSort != 1 && filterProduct.priceSort != -1) return res.status(400).send({ status: false, message: 'priceSort should be 1 or -1!! ' })
             priceSort = filterProduct.priceSort
         }
+        //else return res.status(400).send({ status: false, message: 'provide field priceSort !! ' })
+
+
 
         //---------[Find product] //
         let data = await productModel.find(filterObject).sort({ price: priceSort })
-        console.log(data)
+        //console.log(data)
         if (data.length == 0) return res.status(404).send({ status: false, message: 'Requested product not found' });
 
 
@@ -191,9 +199,8 @@ let getProducts = async (req, res) => {
                 }
             }
 
-            if (newData.length == 0) return res.status(404).send({ status: false, message: 'Product not found' })
+            if (newData.length == 0) return res.status(404).send({ status: false, message: 'Requested product not found' })
 
-            //Finally all filters validations done, now return the filtered products
             return res.status(200).send(
                 {
                     status: true,
@@ -202,6 +209,7 @@ let getProducts = async (req, res) => {
                 })
         }
 
+        //if name filter not provided, return data in response
         return res.status(200).send({status: true, message: 'Product list', data: data})
 
     }
@@ -239,6 +247,7 @@ const updateProduct = async function (req, res) {
     try {
         let productId = req.params.productId
         let data = req.body
+        let files = req.files;
         let updateObject = {}
         let sizeList = [] 
 
@@ -268,7 +277,7 @@ const updateProduct = async function (req, res) {
         
         if (description) {
             description = description.trim().split(" ").filter(x => x).join(" ");
-            console.log(description)
+            //console.log(description)
 
             updateObject.description = description
         }
@@ -299,6 +308,11 @@ const updateProduct = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid format of productImage" })
         }
 
+        if(files.length > 0){
+            let uploadedFileURL = await uploadFile(files[0])
+            updateObject.productImage = uploadedFileURL
+        }
+
         if (style) {
             style = style.trim()
             if (!styleRegex.test(style)) return res.status(400).send({ status: false, message: "Invalid style" })
@@ -308,7 +322,7 @@ const updateProduct = async function (req, res) {
         
         let uniqueSizes = []
         if (availableSizes) {
-            //availableSizes = availableSizes.trim()
+            
             sizeList = availableSizes.toUpperCase().split(",").map(x => x.trim());
 
             if (Array.isArray(sizeList)) {
@@ -323,9 +337,6 @@ const updateProduct = async function (req, res) {
                 }
             }
         }
-
-        
-
 
         
         if (isFreeShipping) {
