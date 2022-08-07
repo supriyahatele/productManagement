@@ -23,7 +23,7 @@ router.put('/products/:productId', updateProduct)
 router.delete('/products/:productId', deleteProduct)
 
 //<======FEATURE 3 APIs=======>
-router.post('/users/:userId/cart',authentication,addToCart)
+router.post('/users/:userId/cart',authentication, addToCart)
 router.put('/users/:userId/cart',authentication,updateCart)
 router.get('/users/:userId/cart',authentication,getCartById)
 router.delete('/users/:userId/cart',authentication,deleteCart)

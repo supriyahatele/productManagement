@@ -117,7 +117,7 @@ const updateOrder = async function (req, res) {
         if (typeof status != "string") return res.status(400).send({ status: false, message: "Status field Invalid format" })
         if(status != 'cancelled'&& status != 'completed') return res.status(400).send({ status: false, message: "status value to update should be cancelled or completed" })
 
-        //if(findOrder.status == 'cancelled' || findOrder.status == 'completed') return res.status(400).send({ status: false, message: "this order is already closed, can't update further" })        
+        if(findOrder.status == 'cancelled' || findOrder.status == 'completed') return res.status(400).send({ status: false, message: "this order is already closed, can't update further" })        
         
 
        if(status == 'cancelled'){

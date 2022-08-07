@@ -125,7 +125,7 @@ const createProduct = async function (req, res) {
 
         //create document
         const newProduct = await productModel.create(data1)
-        return res.status(201).send({ status: true , msg: "Success", data: newProduct })
+        return res.status(201).send({ status: true , message:"Success", data: newProduct })
 
     } catch (err) {
         console.log(err)
@@ -204,13 +204,13 @@ let getProducts = async (req, res) => {
             return res.status(200).send(
                 {
                     status: true,
-                    message: 'Product list',
+                    message: 'Success',
                     data: newData
                 })
         }
 
         //if name filter not provided, return data in response
-        return res.status(200).send({status: true, message: 'Success', data: data})
+        return res.status(200).send({status: true, message:'Success', data: data})
 
     }
     catch (err) {
@@ -231,7 +231,7 @@ const getProductById = async function (req, res) {
         let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!findProduct) return res.status(404).send({ status: false, message: " product not found" })
 
-        return res.status(200).send({ status: true, message: " Success", data: findProduct })
+        return res.status(200).send({ status: true, message: "Success", data: findProduct })
 
 
     } catch (err) {
@@ -358,7 +358,7 @@ const updateProduct = async function (req, res) {
 
         let update = await productModel.findOneAndUpdate({ _id: productId }, { $push: { availableSizes: uniqueSizes}, $set: updateObject }, { new: true })
 
-        res.status(200).send({ status: true, msg: "successfully updated", data: update })
+        res.status(200).send({ status: true, message: "Success", data: update })
 
     } catch (err) {
         console.log(err)

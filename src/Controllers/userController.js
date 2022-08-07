@@ -21,7 +21,7 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
 
-let NameRegex = /^(?![\. ])[a-zA-Z\. ]+(?<! )$/
+let NameRegex = /^[a-zA-Z]+$/
 let emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
 let passwordRegex = /^[A-Za-z 0-9\d@$!%*?&]{8,15}$/
 let addressStreetRegex = /^[a-zA-Z0-9 -\.]+$/
@@ -47,13 +47,13 @@ const createUser = async function (req, res) {
 
         //validate fname
         if (!keyValid(fname)) return res.status(400).send({ status: false, message: "Please enter fname" })
-        //fname = fname.trim();
-        fname = fname.trim().split(" ").filter(word => word).join(" ");
+        fname = fname.trim();
+        
         if (!NameRegex.test(fname)) return res.status(400).send({ status: false, message: "Invalid fname" })
         //validate lname
         if (!lname) return res.status(400).send({ status: false, message: "Please enter lname" })
-        //lname = lname.trim();
-        lname = lname.trim().split(" ").filter(word => word).join(" ");
+        lname = lname.trim();
+       
         if (!NameRegex.test(lname)) return res.status(400).send({ status: false, message: "Invalid lname" })
 
         //validate email
@@ -380,7 +380,7 @@ const updateProfile = async function (req, res) {
         //<==========Updating document==============>
         validUser.save();
 
-        res.status(200).send({ status: true, msg: "User profile updated", data: validUser })
+        res.status(200).send({ status: true,message:"Success", data: validUser })
     } catch (err) {
         console.log(err)
         res.status(500).send({ status: false, message: err.message })
