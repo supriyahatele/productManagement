@@ -97,7 +97,7 @@ const addToCart = async function (req, res) {
 
             //adding a new product in existing cart
             let userCart = await cartModel.findOneAndUpdate({ userId: userId }, { $push: { items: item }, $inc: { totalPrice: priceSum, totalItems: 1 } }, { new: true })//, { $inc: { totalPrice: priceSum , totalItems: 1 } }, { new: true })
-            return res.status(200).send({ status: true, message: "Success", data: userCart })
+            return res.status(201).send({ status: true, message: "Success", data: userCart })
         }
         if (!findCart) {
             let data1 = {
@@ -225,7 +225,7 @@ const getCartById = async function (req, res) {
         if (!findCart) return res.status(404).send({ status: false, message: "cart doesn't exist for this user!!" })
 
 
-        return res.status(200).send({ status: true, message: "Details fetched successfully", data: findCart })
+        return res.status(200).send({ status: true, message: "Success", data: findCart })
 
     } catch (err) {
         console.log(err)
@@ -254,12 +254,12 @@ const deleteCart = async function (req, res) {
         let findCart = await cartModel.findOne({ userId: userId })
         if (!findCart) return res.status(404).send({ status: false, message: "cart doesn't exist for this user!!" })
 
-        if (findCart.totalPrice == 0 && findCart.totalItems == 0 && findCart.items.length == 0) { return res.status(404).send({ status: false, message: "cart already empty!!" }) }
+        //if (findCart.totalPrice == 0 && findCart.totalItems == 0 && findCart.items.length == 0) { return res.status(404).send({ status: false, message: "cart already empty!!" }) }
 
         let deleteObject = { items: [], totalPrice: 0, totalItems: 0 }
 
         let deletedCart = await cartModel.findOneAndUpdate({ userId: userId }, deleteObject, { new: true })
-        res.status(200).send({ status: true, message: "deleted", data: deletedCart })
+        res.status(204).send({ status: true, message: "deleted", data: deletedCart })
 
 
     } catch (err) {

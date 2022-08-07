@@ -125,7 +125,7 @@ const createProduct = async function (req, res) {
 
         //create document
         const newProduct = await productModel.create(data1)
-        return res.status(201).send({ status: true, data: newProduct })
+        return res.status(201).send({ status: true , msg: "Success", data: newProduct })
 
     } catch (err) {
         console.log(err)
@@ -210,7 +210,7 @@ let getProducts = async (req, res) => {
         }
 
         //if name filter not provided, return data in response
-        return res.status(200).send({status: true, message: 'Product list', data: data})
+        return res.status(200).send({status: true, message: 'Success', data: data})
 
     }
     catch (err) {
@@ -231,7 +231,7 @@ const getProductById = async function (req, res) {
         let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!findProduct) return res.status(404).send({ status: false, message: " product not found" })
 
-        return res.status(200).send({ status: true, message: " product", data: findProduct })
+        return res.status(200).send({ status: true, message: " Success", data: findProduct })
 
 
     } catch (err) {

@@ -35,7 +35,7 @@ const createOrder = async function (req, res) {
         let { cartId, cancellable, status } = data
 
         if (!cartId) return res.status(400).send({ status: false, message: "please provide cartId" })
-        if (typeof productId != "string") return res.status(400).send({ status: false, message: " Enter productId in valid format!!! " });
+        if (typeof cartId != "string") return res.status(400).send({ status: false, message: " Enter cartId in valid format!!! " });
         cartId = cartId.trim();
         if (!isValidObjectId(cartId)) return res.status(400).send({ status: false, message: " enter a valid cartId " });
         let checkCart = await cartModel.findById({ _id: cartId }).select({ _id: 0, userId: 1, items: 1, totalPrice: 1, totalItems: 1 })
@@ -72,7 +72,7 @@ const createOrder = async function (req, res) {
         let deleteObject = { items: [], totalPrice: 0, totalItems: 0 }
         let deletedCart = await cartModel.findOneAndUpdate({ userId: userId }, deleteObject, { new: true })
 
-      res.status(201).send({ status: true, message: "order created", data: order })
+      res.status(201).send({ status: true, message: "Success", data: order })
     } catch (err) {
         console.log(err)
         res.status(500).send({ status: false, message: err.message })
@@ -104,7 +104,7 @@ const updateOrder = async function (req, res) {
         let { orderId,status } = req.body
 
         if (!orderId) return res.status(400).send({ status: false, msg: "plz provide orderId" })
-        if (typeof productId != "string") return res.status(400).send({ status: false, message: " Enter productId in valid format!!! " });
+        if (typeof orderId != "string") return res.status(400).send({ status: false, message: " Enter orderId in valid format!!! " });
         orderId = orderId.trim()
         if (!isValidObjectId(orderId)) return res.status(400).send({ status: false, message: " provide a valid orderId " });
 
@@ -117,7 +117,7 @@ const updateOrder = async function (req, res) {
         if (typeof status != "string") return res.status(400).send({ status: false, message: "Status field Invalid format" })
         if(status != 'cancelled'&& status != 'completed') return res.status(400).send({ status: false, message: "status value to update should be cancelled or completed" })
 
-        if(findOrder.status == 'cancelled' || findOrder.status == 'completed') return res.status(400).send({ status: false, message: "this order is already closed, can't update further" })        
+        //if(findOrder.status == 'cancelled' || findOrder.status == 'completed') return res.status(400).send({ status: false, message: "this order is already closed, can't update further" })        
         
 
        if(status == 'cancelled'){
@@ -133,7 +133,7 @@ const updateOrder = async function (req, res) {
 
         findOrder.save();
 
-        return res.status(200).send({ status: true, message: "Updated successfully", data: findOrder })
+        return res.status(200).send({ status: true, message: "Success", data: findOrder })
 
     } catch (err) {
         console.log(err)

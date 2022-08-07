@@ -34,6 +34,11 @@ let phoneRegex = /^[6-9]\d{9}$/
 const createUser = async function (req, res) {
     try {
         let data = req.body
+        
+        if (!isValidRequestBody(data)) {
+            return res.status(400).send({ status: false, message: "requestBody cant be empty" });
+        }
+
         let files = req.files
 
         if (!files || files.length == 0) return res.status(400).send({ status: false, message: "Please enter image file!!" })
@@ -42,11 +47,13 @@ const createUser = async function (req, res) {
 
         //validate fname
         if (!keyValid(fname)) return res.status(400).send({ status: false, message: "Please enter fname" })
-        fname = fname.trim();
+        //fname = fname.trim();
+        fname = fname.trim().split(" ").filter(word => word).join(" ");
         if (!NameRegex.test(fname)) return res.status(400).send({ status: false, message: "Invalid fname" })
         //validate lname
         if (!lname) return res.status(400).send({ status: false, message: "Please enter lname" })
-        lname = lname.trim();
+        //lname = lname.trim();
+        lname = lname.trim().split(" ").filter(word => word).join(" ");
         if (!NameRegex.test(lname)) return res.status(400).send({ status: false, message: "Invalid lname" })
 
         //validate email
@@ -373,7 +380,7 @@ const updateProfile = async function (req, res) {
         //<==========Updating document==============>
         validUser.save();
 
-        res.status(200).send({ status: true, msg: "successfully updated", data: validUser })
+        res.status(200).send({ status: true, msg: "User profile updated", data: validUser })
     } catch (err) {
         console.log(err)
         res.status(500).send({ status: false, message: err.message })
