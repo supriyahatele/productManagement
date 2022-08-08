@@ -33,13 +33,14 @@ const createOrder = async function (req, res) {
         }
 
         let { cartId, cancellable, status } = data
-
+       
         if (!cartId) return res.status(400).send({ status: false, message: "please provide cartId" })
         if (typeof cartId != "string") return res.status(400).send({ status: false, message: " Enter cartId in valid format!!! " });
         cartId = cartId.trim();
         if (!isValidObjectId(cartId)) return res.status(400).send({ status: false, message: " enter a valid cartId " });
         let checkCart = await cartModel.findById({ _id: cartId }).select({ _id: 0, userId: 1, items: 1, totalPrice: 1, totalItems: 1 })
         if (!checkCart) return res.status(404).send({ status: false, message: " cart not found" })
+        if(checkCart.totalPrice == 0 && checkCart.totalItems == 0) return res.status(404).send({ status: false, message: "cart not found" })
 
         let totalQuantity = 0
         for (i in checkCart.items) {
@@ -67,6 +68,7 @@ const createOrder = async function (req, res) {
             if (typeof cancellable != "boolean") return res.status(400).send({ status: false, message: "Cancellable should be of Boolean type" })
             newObj.cancellable = cancellable;
         }
+        
         let order = await orderModel.create(newObj)
 
         let deleteObject = { items: [], totalPrice: 0, totalItems: 0 }
