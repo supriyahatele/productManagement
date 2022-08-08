@@ -189,7 +189,7 @@ const updateCart = async function (req, res) {
                     }
 
                 }
-            
+            }
             if (f == 0) { return res.status(404).send({ status: false, message: "productId not found in cart" }) }    // //set flag when given  productid is not found in cart
 
 
@@ -197,7 +197,7 @@ const updateCart = async function (req, res) {
             findCart.save()
             return res.status(200).send({ status: true, message: "Success", data: findCart })
 
-        }
+        
     
     } catch (err) {
         console.log(err)
