@@ -12,6 +12,8 @@ const isValidRequestBody = function (requestBody) {
 }
 
 
+
+
 // <================================================= POST /order ===============================================================>
 
 const createOrder = async function (req, res) {
@@ -64,7 +66,7 @@ const createOrder = async function (req, res) {
             newObj.status = status
         }
 
-        if (cancellable) {
+        if (keyValid(cancellable)) {
             if (typeof cancellable != "boolean") return res.status(400).send({ status: false, message: "Cancellable should be of Boolean type" })
             newObj.cancellable = cancellable;
         }
