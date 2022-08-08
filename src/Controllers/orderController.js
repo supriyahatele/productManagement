@@ -11,7 +11,11 @@ const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 }
 
-
+const keyValid = (key) => {
+    if (typeof (key) === 'undefined' || typeof (key) === 'null') return false
+    if (typeof (key) === 'string' && key.trim().length === 0) return false
+    return true
+}
 
 
 // <================================================= POST /order ===============================================================>
