@@ -163,7 +163,7 @@ let getProducts = async (req, res) => {
         if (priceLessThan) {
             if (!priceRegex.test(priceLessThan)) return res.status(400).send({ status: false, message: 'Invalid format of priceLessThan!! ' })
             if (priceGreaterThan) {
-                if(priceGreaterThan >= priceLessThan || priceLessThan == 1+priceGreaterThan ) return res.status(400).send({ status: false, message: 'Invalid combination of priceLessThan and priceGreaterThan!! ' })
+                if(priceGreaterThan >= priceLessThan) return res.status(400).send({ status: false, message: 'Invalid combination of priceLessThan and priceGreaterThan!! ' })
                 filterObject.price = { $gt: priceGreaterThan, $lt: priceLessThan }
             } else {
                 filterObject.price = {
