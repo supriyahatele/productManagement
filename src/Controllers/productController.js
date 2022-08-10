@@ -173,8 +173,20 @@ let getProducts = async (req, res) => {
         }
 
         if (size) {
-            let temp = size.split(',') 
-            filterObject.availableSizes = { $in: temp }
+            let sizeList = size.toUpperCase().split(",").map(x => x.trim());
+        //console.log(sizeList)
+        let uniqueSizes = []
+    
+        
+            for (let i = 0; i < sizeList.length; i++) {
+                if (!["S", "XS", "M", "X", "L", "XXL", "XL"].includes(sizeList[i]))
+                    return res.status(400).send({ status: false, message: "Please Enter valid size, it should include only sizes from  (S,XS,M,X,L,XXL,XL) " })
+                if(!uniqueSizes.includes(sizeList[i]))
+                    uniqueSizes.push(sizeList[i])
+            }
+            //console.log("Unique Sizes: ", uniqueSizes);
+        
+            filterObject.availableSizes = { $in: uniqueSizes }
         }
 
         if ('priceSort' in filterProduct) {
@@ -217,7 +229,6 @@ let getProducts = async (req, res) => {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-
 // <================================================= GET /products/:productId ======================================================>
 
 const getProductById = async function (req, res) {
